@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PCIe Tools Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* Default theme (Classic Blue) */
+    :root {
+      --primary: #3253dc;
+      --primary-light: #4d6ef1;
+      --accent: #50e4ff;
+      --sidebar-bg: #101229e6;
+      --dashboard-bg: linear-gradient(135deg, #3253dc 0%, #101229 100%);
+      --glass: rgba(255,255,255,0.10);
+      --card-glass: rgba(255,255,255,0.15);
+      --tile-hover: #3253dc33;
+    }
+    body.theme-classic-blue {
+      --primary: #3253dc;
+      --primary-light: #4d6ef1;
+      --accent: #50e4ff;
+      --sidebar-bg: #101229e6;
+      --dashboard-bg: linear-gradient(135deg, #3253dc 0%, #101229 100%);
+      --tile-hover: #3253dc33;
+    }
+    body.theme-emerald {
+      --primary: #01b574;
+      --primary-light: #00e0d3;
+      --accent: #38f9d7;
+      --sidebar-bg: #112c23e6;
+      --dashboard-bg: linear-gradient(135deg, #01b574 0%, #1a2636 100%);
+      --tile-hover: #01b57433;
+    }
+    body.theme-sunset {
+      --primary: #ff6b1a;
+      --primary-light: #ffd93d;
+      --accent: #ffb86b;
+      --sidebar-bg: #2d231ee6;
+      --dashboard-bg: linear-gradient(135deg, #ff6b1a 0%, #23272c 100%);
+      --tile-hover: #ff6b1a33;
+    }
+    body.theme-cyber {
+      --primary: #7f5af0;
+      --primary-light: #2cb67d;
+      --accent: #ff89d6;
+      --sidebar-bg: #1d123ee6;
+      --dashboard-bg: linear-gradient(135deg, #7f5af0 0%, #16161a 100%);
+      --tile-hover: #7f5af033;
+    }
+    body.theme-slate {
+      --primary: #586069;
+      --primary-light: #b3bac8;
+      --accent: #f7f7fa;
+      --sidebar-bg: #23272fe6;
+      --dashboard-bg: linear-gradient(135deg, #586069 0%, #23272f 100%);
+      --tile-hover: #58606933;
+    }
+    body.theme-mint {
+      --primary: #43e97b;
+      --primary-light: #38f9d7;
+      --accent: #d2f1e4;
+      --sidebar-bg: #1b3128e6;
+      --dashboard-bg: linear-gradient(135deg, #43e97b 0%, #18222c 100%);
+      --tile-hover: #43e97b33;
+    }
+    body.theme-royal {
+      --primary: #f9c846;
+      --primary-light: #ffae42;
+      --accent: #ff8c32;
+      --sidebar-bg: #22223be6;
+      --dashboard-bg: linear-gradient(135deg, #f9c846 0%, #22223b 100%);
+      --tile-hover: #f9c84633;
+    }
+    body.theme-ruby {
+      --primary: #f44336;
+      --primary-light: #ffb300;
+      --accent: #ff7961;
+      --sidebar-bg: #1e1a1ae6;
+      --dashboard-bg: linear-gradient(135deg, #f44336 0%, #1e1a1a 100%);
+      --tile-hover: #f4433633;
+    }
+    body.theme-aqua {
+      --primary: #00c9a7;
+      --primary-light: #005f73;
+      --accent: #0a9396;
+      --sidebar-bg: #0a192fe6;
+      --dashboard-bg: linear-gradient(135deg, #00c9a7 0%, #0a192f 100%);
+      --tile-hover: #00c9a733;
+    }
+    body.theme-material {
+      --primary: #009688;
+      --primary-light: #ffc107;
+      --accent: #4dd0e1;
+      --sidebar-bg: #263238e6;
+      --dashboard-bg: linear-gradient(135deg, #009688 0%, #263238 100%);
+      --tile-hover: #00968833;
+    }
+    /* Dashboard base styles (from previous example) */
+    body {
+      background: var(--dashboard-bg);
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      color: #e8eafd;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.4s;
+    }
+    .bg-geom {
+      position: fixed;
+      width: 100vw; height: 100vh;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bgcircle {
+      position: absolute; border-radius: 50%;
+      filter: blur(4px); opacity: 0.3;
+      animation: floaty 21s infinite alternate;
+    }
+    .bgcircle1 { width: 480px; height: 480px; background: var(--primary-light); left: -120px; top: 70px; animation-delay: 0s;}
+    .bgcircle2 { width: 330px; height: 330px; background: var(--accent); right: -100px; top: 320px; animation-delay: 6s;}
+    .bgcircle3 { width: 160px; height: 160px; background: #fff; bottom: 100px; left: 60vw; opacity: 0.12; animation-delay: 2s;}
+    @keyframes floaty {
+      0% { transform: translateY(0) scale(1);}
+      55% { transform: translateY(-22px) scale(1.08);}
+      100% { transform: translateY(32px) scale(0.92);}
+    }
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: 220px;
+      background: var(--sidebar-bg);
+      box-shadow: 5px 0 26px #2438a637;
+      display: flex;
+      flex-direction: column;
+      z-index: 12;
+      transition: width 0.25s, background 0.3s;
+    }
+    .sidebar .logo {
+      width: 54px; height: 54px;
+      margin: 2rem auto 1.7rem auto;
+      filter: drop-shadow(0 8px 36px #4d6ef1c1);
+      border-radius: 16px;
+      display: block;
+    }
+    .sidebar .nav {
+      flex-grow: 1;
+    }
+    .sidebar .nav-link {
+      color: #b4c6ff;
+      font-size: 1.15rem;
+      font-weight: 600;
+      border-radius: 1rem;
+      padding: 0.9rem 1.3rem;
+      margin: 0.3rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      transition: background 0.17s, color 0.18s;
+      position: relative;
+    }
+    .sidebar .nav-link.active, .sidebar .nav-link:hover {
+      background: var(--glass);
+      color: #fff;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 14px #3253dc22;
+    }
+    .sidebar .nav-link .icon {
+      font-size: 1.45rem;
+      line-height: 1;
+    }
+    .sidebar .sidebar-user {
+      padding: 1.5rem 1rem 1.5rem 1.3rem;
+      border-top: 1px solid #2c3666cc;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: #161c35cc;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .sidebar .sidebar-user img {
+      width: 38px; height: 38px; border-radius: 50%;
+      border: 2px solid var(--primary-light);
+      object-fit: cover;
+    }
+    .topbar {
+      margin-left: 220px;
+      background: transparent;
+      padding: 1.15rem 2.6rem 0.7rem 2.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 2;
+      position: relative;
+      border-bottom: 1px solid #2c3666cc;
+    }
+    .topbar .brand {
+      font-weight: 900;
+      font-size: 2.1rem;
+      color: var(--primary);
+      letter-spacing: 1.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      text-shadow: 0 2px 16px #4d6ef1cc;
+    }
+    .topbar .brand img {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      filter: drop-shadow(0 2px 8px #3253dc66);
+    }
+    .topbar .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .topbar .toolbar .notif {
+      font-size: 1.45rem;
+      color: #e8eafd;
+      cursor: pointer;
+      transition: color 0.15s;
+      margin-right: 1.1rem;
+    }
+    .topbar .toolbar .notif:hover {
+      color: var(--primary-light);
+    }
+    .topbar .toolbar .dropdown-toggle {
+      color: #e8eafd;
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .theme-switcher-box {
+      margin-left: 220px;
+      margin-top: 1.2rem;
+      padding-left: 2.7rem;
+      z-index: 4;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    .theme-switcher-label {
+      color: #e8eafd;
+      font-weight: 600;
+      font-size: 1.01rem;
+      opacity: .86;
+      letter-spacing: .5px;
+    }
+    .theme-switcher-select {
+      background: var(--sidebar-bg);
+      color: #fff;
+      border: 1.5px solid var(--primary-light);
+      border-radius: 1.1rem;
+      padding: 0.33rem 1.2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      outline: none;
+      margin-right: 1.2rem;
+      transition: background 0.2s, border 0.2s;
+    }
+    .dashboard-content {
+      margin-left: 220px;
+      margin-top: 2.3rem;
+      padding: 0 2.7rem 2rem 2.7rem;
+      z-index: 2;
+      position: relative;
+    }
+    .dashboard-header {
+      font-size: 2.18rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 1.3px;
+      margin-bottom: 2.3rem;
+      text-shadow: 0 3px 20px #4d6ef1a6;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .dashboard-header .badge {
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 1rem;
+      font-weight: 700;
+      margin-left: 0.8rem;
+      font-size: 1rem;
+    }
+    .tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 2.2rem;
+      margin-bottom: 2.3rem;
+    }
+    .dashboard-tile {
+      background: var(--card-glass);
+      border-radius: 1.7rem;
+      box-shadow: 0 8px 28px #4d6ef130, 0 1.5px 9px #4d6ef13b;
+      border: 2.5px solid #4d6ef127;
+      padding: 2.45rem 1.2rem 1.3rem 1.2rem;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none !important;
+      color: #e8eafd;
+      min-height: 220px;
+      transition: box-shadow 0.16s, border-color 0.18s, transform 0.17s cubic-bezier(.68,-0.55,.27,1.55);
+      z-index: 5;
+      backdrop-filter: blur(4px);
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    }
+    .dashboard-tile:before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      top: 18px; left: 50%; transform: translateX(-50%);
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 60% 40%, var(--primary-light) 0%, var(--tile-hover) 100%);
+      opacity: 0.3;
+      filter: blur(16px);
+      transition: opacity 0.18s;
+    }
+    .dashboard-tile:hover, .dashboard-tile:focus {
+      transform: scale(1.045) translateY(-7px);
+      border-color: var(--primary);
+      box-shadow: 0 12px 36px #4d6ef13d, 0 5px 18px #50e4ff3a;
+      background: var(--tile-hover);
+      color: #fff;
+      z-index: 10;
+    }
+    .dashboard-tile:hover:before, .dashboard-tile:focus:before {
+      opacity: 0.55;
+    }
+    .tile-icon-bg {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      box-shadow: 0 2px 18px #3253dc33;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+      font-size: 2.1rem;
+      color: #fff;
+      animation: popicon 2s cubic-bezier(.68,-0.55,.27,1.55) infinite alternate;
+    }
+    .dashboard-tile:hover .tile-icon-bg, .dashboard-tile:focus .tile-icon-bg {
+      animation: none;
+      box-shadow: 0 4px 36px #50e4ff44;
+      background: linear-gradient(135deg, var(--accent), var(--primary-light));
+    }
+    @keyframes popicon {
+      0% { transform: scale(1) translateY(0);}
+      100% { transform: scale(1.13) translateY(-10px);}
+    }
+    .tile-title {
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.2px;
+      margin-bottom: 0.38rem;
+      text-align: center;
+      z-index: 2;
+      position: relative;
+    }
+    .tile-desc {
+      font-size: 1.04rem;
+      color: #e8eafd;
+      opacity: 0.88;
+      text-align: center;
+      z-index: 2;
+      position: relative;
+    }
+    .tile-action {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 1.1rem;
+      padding: 0.48rem 1.3rem;
+      font-weight: 700;
+      font-size: 1.02rem;
+      margin-top: 1rem;
+      transition: background 0.15s;
+      box-shadow: 0 2px 7px #3253dc33;
+    }
+    .dashboard-tile:hover .tile-action {
+      background: var(--accent);
+      color: var(--primary-dark);
+    }
+    .widgets-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.2rem;
+      margin-bottom: 2.5rem;
+    }
+    .dashboard-widget {
+      flex: 1 1 320px;
+      min-width: 280px;
+      background: var(--glass);
+      border-radius: 1.3rem;
+      box-shadow: 0 1.5px 12px #3253dc22;
+      padding: 1.3rem 1.2rem 1.1rem 1.2rem;
+      color: #e8eafd;
+      backdrop-filter: blur(3px);
+      border: 1.5px solid #4d6ef127;
+    }
+    .dashboard-widget h5 {
+      font-weight: 700;
+      color: var(--primary-light);
+      margin-bottom: 1rem;
+      font-size: 1.18rem;
+      letter-spacing: 0.6px;
+    }
+    @media (max-width:1200px) {
+      .dashboard-content {padding-left:1.5rem; padding-right:1.5rem;}
+      .theme-switcher-box {padding-left: 1.5rem;}
+      .topbar {padding-left:1.5rem; padding-right:1.5rem;}
+    }
+    @media (max-width:900px) {
+      .sidebar, .topbar, .dashboard-content, .theme-switcher-box {margin-left: 0 !important;}
+      .sidebar {position:absolute;left: -230px;opacity:0;pointer-events:none;}
+      .dashboard-content {padding-left: 0.5rem; padding-right: 0.5rem;}
+      .theme-switcher-box {padding-left: 0.5rem;}
+      .topbar {padding-left: 0.5rem; padding-right: 0.5rem;}
+    }
+    @media (max-width:600px) {
+      .tiles-grid {gap: 1.1rem;}
+      .dashboard-tile { min-height: 145px; padding: 1.2rem 0.5rem;}
+    }
+  </style>
+</head>
+<body class="theme-classic-blue">
+  <!-- Animated background -->
+  <div class="bg-geom">
+    <div class="bgcircle bgcircle1"></div>
+    <div class="bgcircle bgcircle2"></div>
+    <div class="bgcircle bgcircle3"></div>
+  </div>
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar d-none d-md-flex flex-column">
+    <img src="{{ url_for('static', filename='logo.svg') }}" alt="PCIe Hub Logo" class="logo">
+    <div class="nav flex-column mb-auto">
+      <a href="/" class="nav-link active"><span class="icon">🏠</span>Dashboard</a>
+      <a href="/gerrit-search" class="nav-link"><span class="icon">🔍</span>Gerrit Search</a>
+      <a href="/cr-count" class="nav-link"><span class="icon">🧮</span>CR Count</a>
+      <a href="/cr-database" class="nav-link"><span class="icon">🗄️</span>CR Database</a>
+      <a href="/lane-calculator" class="nav-link"><span class="icon">🖩</span>Lane Calculator</a>
+      <a href="/bandwidth-calculator" class="nav-link"><span class="icon">🖩</span>Bandwidth Calculator</a>
+      <a href="/rampup" class="nav-link"><span class="icon">🚀</span>New Joinee Rampup</a>
+    </div>
+    <div class="sidebar-user mt-auto">
+      <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Public" title="Public">
+      <span>Public User</span>
+    </div>
+  </nav>
+  <!-- Top Navbar -->
+  <nav class="topbar">
+    <div class="brand">
+      <img src="{{ url_for('static', filename='logo.svg') }}" alt="Logo">
+      PCIe Tools Dashboard
+    </div>
+    <div class="toolbar">
+      <span class="notif" data-bs-toggle="tooltip" data-bs-title="Notifications">🔔</span>
+      <div class="dropdown">
+        <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Public
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="#">Help</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- Theme Switcher -->
+  <div class="theme-switcher-box">
+    <span class="theme-switcher-label">Theme:</span>
+    <select class="theme-switcher-select" id="theme-switcher">
+      <option value="theme-classic-blue">Classic Blue</option>
+      <option value="theme-emerald">Emerald Tech</option>
+      <option value="theme-sunset">Sunset Orange</option>
+      <option value="theme-cyber">Cyber Purple</option>
+      <option value="theme-slate">Slate Grey</option>
+      <option value="theme-mint">Mint Fresh</option>
+      <option value="theme-royal">Royal Gold</option>
+      <option value="theme-ruby">Ruby Red</option>
+      <option value="theme-aqua">Aqua Night</option>
+      <option value="theme-material">Material Teal</option>
+    </select>
+  </div>
+  <!-- Main Content -->
+  <main class="dashboard-content">
+    <div class="dashboard-header">
+      <span>🧰 PCIe Engineering Dashboard</span>
+      <span class="badge">PUBLIC</span>
+    </div>
+    <div class="tiles-grid">
+      <!-- Gerrit Search -->
+      <div class="dashboard-tile">
+        <div class="tile-icon-bg" style="background: linear-gradient(135deg, #6380ff, #51eafd);">
+          <img src="https://www.gerritcodereview.com/images/gerrit_logo.png" alt="Gerrit" style="width:2rem;height:2rem;">
+        </div>
+        <div class="tile-title">Gerrit Search</div>
+        <div class="tile-desc">Search code reviews and changesets across Gerrit for any project.</div>
+        <a href="/gerrit-search" class="tile-action mt-auto">Open Tool</a>
+      </div>
+      <!-- CR Count -->
+      <div class="dashboard-tile">
+        <div class="tile-icon-bg" style="background: linear-gradient(135deg, #f7971e, #ffd200); color: #222;">
+          <span style="font-size:2.2rem;">🧮</span>
+        </div>
+        <div class="tile-title">CR Count</div>
+        <div class="tile-desc">Get instant statistics on open, merged, and pending code reviews.</div>
+        <a href="/cr-count" class="tile-action mt-auto">View Stats</a>
+      </div>
+      <!-- CR Database -->
+      <div class="dashboard-tile">
+        <div class="tile-icon-bg" style="background: linear-gradient(135deg, #3253dc, #50e4ff);">
+          <span style="font-size:2.2rem;">🗄️</span>
+        </div>
+        <div class="tile-title">CR Database</div>
+        <div class="tile-desc">Browse and search the database of all code reviews, past and present.</div>
+        <a href="/cr-database" class="tile-action mt-auto">Browse DB</a>
+      </div>
+      <!-- Lane Calculator -->
+      <div class="dashboard-tile">
+        <div class="tile-icon-bg" style="background: linear-gradient(135deg, #3253dc, #50e4ff);">
+          <span style="font-size:2.2rem;">🖩</span>
+        </div>
+        <div class="tile-title">Lane Calculator</div>
+        <div class="tile-desc">Calculate the number of PCIe lanes required for your use case.</div>
+        <a href="/lane-calculator" class="tile-action mt-auto">Calculate</a>
+      </div>
+      <!-- Bandwidth Calculator -->
+      <div class="dashboard-tile">
+        <div class="tile-icon-bg" style="background: linear-gradient(135deg, #4d6ef1, #3253dc);">
+          <span style="font-size:2.2rem;">🖩</span>
+        </div>
+        <div class="tile-title">Bandwidth Calculator</div>
+        <div class="tile-desc">Estimate PCIe bandwidth and throughput for any configuration.</div>
+        <a href="/bandwidth-calculator" class="tile-action mt-auto">Estimate</a>
+      </div>
+      <!-- New Joinee Rampup -->
+      <div class="dashboard-tile">
+        <div class="tile-icon-bg" style="background: linear-gradient(135deg, #4d6ef1, #50e4ff);">
+          <span style="font-size:2.2rem;">🚀</span>
+        </div>
+        <div class="tile-title">New Joinee Rampup</div>
+        <div class="tile-desc">Step-by-step onboarding & essential resources for new team members.</div>
+        <a href="/rampup" class="tile-action mt-auto">Start Rampup</a>
+      </div>
+    </div>
+    <div class="widgets-row">
+      <div class="dashboard-widget">
+        <h5>Recent Activity</h5>
+        <ul class="ps-3">
+          <li>Searched <b>Gerrit</b> for "feature/pcie6"</li>
+          <li>Checked <b>CR Database</b> for project "PHY"</li>
+          <li>Used <b>Lane Calculator</b> – 2 hours ago</li>
+        </ul>
+      </div>
+      <div class="dashboard-widget">
+        <h5>Announcements</h5>
+        <ul class="ps-3">
+          <li>New tool: <b>CR Database</b> now live!</li>
+          <li>Try the <b>New Joinee Rampup</b> to get started fast.</li>
+          <li>All tools are open for everyone. Bookmark this dashboard!</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+  <div class="footer mt-5" style="color:#b4c6ff;text-align:center;background:transparent;font-weight:500;font-size:1.05rem;">
+    &copy; {{ now().year }} PCIe Tools Hub &mdash; All rights reserved.
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Bootstrap tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl))
+    // Theme switcher
+    document.getElementById('theme-switcher').addEventListener('change', function() {
+      document.body.className = this.value;
+    });
+  </script>
+</body>
+</html>
