@@ -1,0 +1,63 @@
+{
+    "name": "PCIe Tools Team Lead",
+    "role": "Engineering Manager",
+    "avatar": "https://via.placeholder.com/60/4f46e5/ffffff?text=TL",
+    "children": [
+        {
+            "name": "Senior PCIe Architect",
+            "role": "Principal Engineer",
+            "avatar": "https://via.placeholder.com/60/059669/ffffff?text=SA",
+            "children": [
+                {
+                    "name": "PCIe Protocol Engineer",
+                    "role": "Senior Software Engineer",
+                    "avatar": "https://via.placeholder.com/60/dc2626/ffffff?text=PE"
+                },
+                {
+                    "name": "Signal Integrity Engineer",
+                    "role": "Hardware Engineer",
+                    "avatar": "https://via.placeholder.com/60/ea580c/ffffff?text=SI"
+                }
+            ]
+        },
+        {
+            "name": "Tools Development Lead",
+            "role": "Senior Engineer",
+            "avatar": "https://via.placeholder.com/60/7c3aed/ffffff?text=TL",
+            "children": [
+                {
+                    "name": "Frontend Developer",
+                    "role": "Software Engineer",
+                    "avatar": "https://via.placeholder.com/60/0891b2/ffffff?text=FE"
+                },
+                {
+                    "name": "Backend Developer",
+                    "role": "Software Engineer",
+                    "avatar": "https://via.placeholder.com/60/dc2626/ffffff?text=BE"
+                },
+                {
+                    "name": "DevOps Engineer",
+                    "role": "Infrastructure Engineer",
+                    "avatar": "https://via.placeholder.com/60/059669/ffffff?text=DO"
+                }
+            ]
+        },
+        {
+            "name": "QA Team Lead",
+            "role": "Quality Assurance Lead",
+            "avatar": "https://via.placeholder.com/60/f59e0b/ffffff?text=QA",
+            "children": [
+                {
+                    "name": "Test Automation Engineer",
+                    "role": "QA Engineer",
+                    "avatar": "https://via.placeholder.com/60/10b981/ffffff?text=TA"
+                },
+                {
+                    "name": "Manual Test Engineer",
+                    "role": "QA Engineer",
+                    "avatar": "https://via.placeholder.com/60/3b82f6/ffffff?text=MT"
+                }
+            ]
+        }
+    ]
+}

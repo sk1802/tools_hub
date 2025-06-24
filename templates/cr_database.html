@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CR Database - PCIe Tools Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cr_database.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-microchip me-2"></i>PCIe Tools Hub
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">
+                    <i class="fas fa-home me-1"></i>Back to Hub
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h1 class="page-title">
+                            <i class="fas fa-database me-3"></i>CR Database
+                        </h1>
+                        <p class="page-subtitle">Code Review Database with Analytics and Search</p>
+                    </div>
+                    <div class="col-auto">
+                        <div class="theme-switch-wrapper">
+                            <label class="theme-switch" for="theme-checkbox">
+                                <input type="checkbox" id="theme-checkbox" />
+                                <div class="slider round">
+                                    <i class="fas fa-sun"></i>
+                                    <i class="fas fa-moon"></i>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs-container">
+                <div class="nav-tabs-wrapper">
+                    <button class="nav-tab active" data-section="analytics">
+                        <i class="fas fa-chart-bar me-2"></i>Analytics
+                    </button>
+                    <button class="nav-tab" data-section="search">
+                        <i class="fas fa-search me-2"></i>Search & Browse
+                    </button>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="analytics-section" class="content-section active">
+                <div class="row g-4 mb-4">
+                    <!-- Summary Cards -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="summary-card">
+                            <div class="card-icon">
+                                <i class="fas fa-code-branch"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="total-crs">0</h3>
+                                <p>Total CRs</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="summary-card">
+                            <div class="card-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="lines-added">0</h3>
+                                <p>Lines Added</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="summary-card">
+                            <div class="card-icon">
+                                <i class="fas fa-minus"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="lines-removed">0</h3>
+                                <p>Lines Removed</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="summary-card">
+                            <div class="card-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="avg-comments">0</h3>
+                                <p>Avg Comments</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Status Distribution -->
+                    <div class="col-lg-6">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h4>Status Distribution</h4>
+                                <div class="chart-controls">
+                                    <button class="chart-type-btn active" data-chart="status" data-type="pie">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </button>
+                                    <button class="chart-type-btn" data-chart="status" data-type="bar">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="status-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Priority Distribution -->
+                    <div class="col-lg-6">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h4>Priority Distribution</h4>
+                                <div class="chart-controls">
+                                    <button class="chart-type-btn active" data-chart="priority" data-type="pie">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </button>
+                                    <button class="chart-type-btn" data-chart="priority" data-type="bar">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="priority-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Component Distribution -->
+                    <div class="col-lg-6">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h4>Component Distribution</h4>
+                                <div class="chart-controls">
+                                    <button class="chart-type-btn active" data-chart="component" data-type="bar">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </button>
+                                    <button class="chart-type-btn" data-chart="component" data-type="pie">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="component-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Author Activity -->
+                    <div class="col-lg-6">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h4>Author Activity</h4>
+                                <div class="chart-controls">
+                                    <button class="chart-type-btn active" data-chart="author" data-type="bar">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </button>
+                                    <button class="chart-type-btn" data-chart="author" data-type="histogram">
+                                        <i class="fas fa-chart-area"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="author-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div id="search-section" class="content-section">
+                <div class="search-controls mb-4">
+                    <div class="row g-3">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label for="search-input">Search</label>
+                                <input type="text" id="search-input" class="form-control" placeholder="Search CRs...">
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                <label for="status-filter">Status</label>
+                                <select id="status-filter" class="form-control">
+                                    <option value="">All Status</option>
+                                    <option value="Open">Open</option>
+                                    <option value="Closed">Closed</option>
+                                    <option value="In Review">In Review</option>
+                                    <option value="Merged">Merged</option>
+                                    <option value="Abandoned">Abandoned</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                <label for="priority-filter">Priority</label>
+                                <select id="priority-filter" class="form-control">
+                                    <option value="">All Priorities</option>
+                                    <option value="Critical">Critical</option>
+                                    <option value="High">High</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Low">Low</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                <label for="component-filter">Component</label>
+                                <select id="component-filter" class="form-control">
+                                    <option value="">All Components</option>
+                                    <option value="PCIe Core">PCIe Core</option>
+                                    <option value="Driver">Driver</option>
+                                    <option value="Firmware">Firmware</option>
+                                    <option value="Documentation">Documentation</option>
+                                    <option value="Testing">Testing</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button id="reset-filters" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-undo me-1"></i>Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="cr-table" class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Reviewer</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Component</th>
+                                <th>Created</th>
+                                <th>Updated</th>
+                                <th>+Lines</th>
+                                <th>-Lines</th>
+                                <th>Comments</th>
+                                <th>Score</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CR Details Modal -->
+    <div class="modal fade" id="cr-details-modal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">CR Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="cr-details-content">
+                        <!-- CR details will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/cr_database.js') }}"></script>
+</body>
+</html>
