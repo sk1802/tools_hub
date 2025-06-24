@@ -1,0 +1,50 @@
+**Context**: I have a PCIe Tools Hub website built with Flask that serves as a team dashboard for PCIe development tools and analytics.
+
+**Current Date/Time**: 2025-06-24 20:05:29 (UTC)
+**Current User**: sk1802
+
+**Tech Stack:**
+- Backend: Flask (Python)
+- Frontend: HTML5, CSS3 (with CSS variables), JavaScript (ES6+)
+- UI Framework: Bootstrap 5
+- Icons: Font Awesome 6
+- Charts: Chart.js
+- Tables: DataTables
+- Fonts: Inter (Google Fonts)
+
+**Design Theme: Modern Corporate Tech Dashboard**
+- Style: Professional, sleek, enterprise-grade web application
+- Color Scheme: Primary (#4f46e5 indigo), Secondary (#06b6d4 cyan), Accent (#f59e0b amber)
+- Design Language: Clean, minimalist with subtle gradients and smooth animations
+- Dark/Light Mode: Dual theme support with CSS variables for theming
+- Animation Style: Smooth transitions (0.3s ease), hover effects, subtle animations
+
+**Current Features:**
+- Main hub page with animated hero section, tool launcher cards, and JSON-based hierarchical team structure
+- CR Database page with two-section navigation (Analytics with interactive Chart.js charts, Search with DataTables)
+- Responsive design with mobile-first approach
+- Theme switching with localStorage persistence
+- Loading states, notifications, and modal dialogs
+
+**File Structure:**
+- app.py (main Flask app)
+- templates/index.html, templates/cr_database.html  
+- static/css/style.css, static/css/cr_database.css
+- static/js/script.js, static/js/cr_database.js
+- data/team_structure.json
+
+**CSS Variables Used:**
+--primary-color, --secondary-color, --accent-color, --bg-primary, --bg-secondary, --bg-card, --text-primary, --text-secondary, --border-color, --shadow, --shadow-lg, --border-radius, --transition
+
+**Requirements for New Features:**
+- Maintain existing design consistency and color scheme
+- Ensure dark/light mode compatibility  
+- Keep responsive design (mobile, tablet, desktop)
+- Use Bootstrap 5 utilities and semantic HTML
+- Follow ES6+ JavaScript patterns
+- Include smooth animations and professional styling
+- Built for PCIe development team context
+
+**REQUEST:** [Insert your specific feature request here]
+
+Please provide complete code with proper file organization and maintain the professional enterprise-grade appearance.
